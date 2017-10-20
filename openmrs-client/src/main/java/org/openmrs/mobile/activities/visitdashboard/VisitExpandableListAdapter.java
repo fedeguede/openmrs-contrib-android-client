@@ -17,6 +17,7 @@ package org.openmrs.mobile.activities.visitdashboard;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,8 +62,13 @@ public class VisitExpandableListAdapter extends BaseExpandableListAdapter {
         for (Encounter encounter : this.mEncounters) {
             ViewGroup convertView = (ViewGroup) inflater.inflate(R.layout.list_visit_item, null);
             LinearLayout contentLayout = (LinearLayout) convertView.findViewById(R.id.listVisitItemLayoutContent);
+            Log.d("VisitiExpandable.java", "encounter type"+encounter.getEncounterType().getDisplay());
             switch (encounter.getEncounterType().getDisplay()) {
                 case EncounterType.VITALS:
+                case EncounterType.VITALS_PRES:
+                case EncounterType.PHARMACOLOGICAL:
+                case EncounterType.NON_PHARMACOLOGICAL:
+                case EncounterType.TEST_ADHERENCE:
                     for (Observation obs : encounter.getObservations()) {
                         convertView = openMRSInflater.addKeyValueStringView(contentLayout, obs.getDisplay(), obs.getDisplayValue());
                     }

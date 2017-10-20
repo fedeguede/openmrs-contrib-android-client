@@ -112,5 +112,85 @@
         </RelativeLayout>
 
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/card">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="Bluetooth Device"
+            android:textSize="@dimen/dashboard_text_size"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/settings_list_separator_width"
+            android:layout_marginTop="@dimen/settings_list_separator_margin"
+            android:layout_marginRight="@dimen/settings_list_separator_margin"
+            android:layout_marginEnd="@dimen/settings_list_separator_margin"
+            android:layout_marginLeft="@dimen/settings_list_separator_margin"
+            android:layout_marginStart="@dimen/settings_list_separator_margin"
+            android:background="@color/card_detailing"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/settings_list_padding"
+            android:paddingRight="@dimen/settings_list_padding"
+            android:paddingStart="@dimen/settings_list_padding"
+            android:paddingEnd="@dimen/settings_list_padding"
+            android:gravity="center_vertical">
+
+            <LinearLayout
+                android:id="@+id/btPairingLinearLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/settings_list_text_title_size"
+                    android:textStyle="bold"
+                    android:text="Bluetooth Device"/>
+
+                <TextView
+                    android:id="@+id/btDeviceTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:textSize="@dimen/settings_list_text_detail_size"/>
+
+            </LinearLayout>
+            <ImageButton
+                android:id="@+id/btPairButton"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/settings_download_button_height"
+                android:src="@drawable/ic_add"
+                android:contentDescription="@string/download_concepts"
+                android:layout_alignParentTop="true"
+                android:layout_toLeftOf="@+id/btRemove"
+                android:layout_toStartOf="@+id/btRemove" />
+
+            <ImageButton
+                android:id="@+id/btRemove"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/settings_download_button_height"
+                android:src="@drawable/delete_patient"
+                android:contentDescription="@string/download_concepts"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true" />
+
+
+
+        </RelativeLayout>
+
+    </LinearLayout>
 
 </LinearLayout>

@@ -132,7 +132,7 @@
                             android:textSize="14sp" />
                     </android.support.design.widget.TextInputLayout>
 
-                    <android.support.design.widget.TextInputLayout
+                   <!-- <android.support.design.widget.TextInputLayout
                         android:id="@+id/textInputLayoutMiddlename"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -150,7 +150,7 @@
                             android:maxLines="1"
                             android:textSize="14sp" />
                     </android.support.design.widget.TextInputLayout>
-
+                -->
                 </LinearLayout>
 
 
@@ -202,6 +202,25 @@
                     android:textSize="14sp"
                     android:textStyle="bold"
                     android:visibility="invisible" />
+
+              <android.support.design.widget.TextInputLayout
+                      android:id="@+id/textInputLayoutHistoryClinic"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                     >
+
+                      <EditText
+                          android:id="@+id/numberHistory"
+                          android:layout_width="fill_parent"
+                          android:layout_height="wrap_content"
+                          android:focusable="true"
+                          android:hint="@string/reg_historyclinic_hint"
+                          android:imeOptions="actionNext"
+                          android:maxLines="1"
+                          android:textSize="14sp" />
+                  </android.support.design.widget.TextInputLayout>
+              -->
+
 
                 <TextView
                     android:layout_width="match_parent"
@@ -427,7 +446,7 @@
                         android:textSize="14sp" />
                 </android.support.design.widget.TextInputLayout>
 
-                <android.support.design.widget.TextInputLayout
+               <!-- <android.support.design.widget.TextInputLayout
                     android:id="@+id/textInputLayoutAddess2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -447,7 +466,7 @@
                         android:maxLines="1"
                         android:textSize="14sp" />
                 </android.support.design.widget.TextInputLayout>
-
+-->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -523,7 +542,7 @@
                             android:textSize="14sp" />
                     </android.support.design.widget.TextInputLayout>
 
-                    <android.support.design.widget.TextInputLayout
+                   <android.support.design.widget.TextInputLayout
                         android:id="@+id/textInputLayoutPostal"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"

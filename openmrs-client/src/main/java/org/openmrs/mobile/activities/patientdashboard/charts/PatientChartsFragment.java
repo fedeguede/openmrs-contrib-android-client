@@ -31,6 +31,7 @@ import org.openmrs.mobile.R;
 import org.openmrs.mobile.activities.patientdashboard.PatientDashboardContract;
 import org.openmrs.mobile.activities.patientdashboard.PatientDashboardFragment;
 import org.openmrs.mobile.models.Encounter;
+import org.openmrs.mobile.models.EncounterType;
 import org.openmrs.mobile.models.Observation;
 import org.openmrs.mobile.models.Visit;
 import org.openmrs.mobile.utilities.ApplicationConstants;
@@ -86,7 +87,8 @@ public class PatientChartsFragment extends PatientDashboardFragment implements P
 
     @Override
     public void populateList(List<Visit> visits) {
-        final String[] displayableEncounterTypes = ApplicationConstants.EncounterTypes.ENCOUNTER_TYPES_DISPLAYS;
+        //final String[] displayableEncounterTypes = ApplicationConstants.EncounterTypes.ENCOUNTER_TYPES_DISPLAYS;
+        final String[] displayableEncounterTypes = {EncounterType.VITALS};
         final HashSet<String> displayableEncounterTypesArray = new HashSet<>(Arrays.asList(displayableEncounterTypes));
         JSONObject observationList = new JSONObject();
 

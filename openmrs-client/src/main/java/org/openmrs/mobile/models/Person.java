@@ -42,6 +42,10 @@ public class Person extends Resource implements Serializable {
     @Expose
     private List<PersonAttribute> attributes = new ArrayList<PersonAttribute>();
 
+//    @Expose
+//    private String medicalRecordNumber;
+//    @SerializedName("medicalRecordNumber")
+
     private Bitmap photo;
 
     /**

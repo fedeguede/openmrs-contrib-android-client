@@ -21,9 +21,12 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.location.Location;
 import android.media.ExifInterface;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
@@ -34,8 +37,12 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,11 +59,31 @@ import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.CommonStatusCodes;
+import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+
+import org.joda.time.Chronology;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
+import org.joda.time.chrono.EthiopicChronology;
+import org.joda.time.chrono.GregorianChronology;
+import org.joda.time.chrono.JulianChronology;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.openmrs.mobile.R;
+import org.openmrs.mobile.activities.ACBaseActivity;
 import org.openmrs.mobile.activities.ACBaseFragment;
 import org.openmrs.mobile.activities.dialog.CustomFragmentDialog;
 import org.openmrs.mobile.activities.dialog.CameraOrGalleryPickerDialog;
@@ -68,6 +95,8 @@ import org.openmrs.mobile.listeners.watcher.PatientBirthdateValidatorWatcher;
 import org.openmrs.mobile.models.Patient;
 import org.openmrs.mobile.models.Person;
 import org.openmrs.mobile.models.PersonAddress;
+import org.openmrs.mobile.models.PersonAttribute;
+import org.openmrs.mobile.models.PersonAttributeType;
 import org.openmrs.mobile.models.PersonName;
 import org.openmrs.mobile.utilities.ApplicationConstants;
 import org.openmrs.mobile.utilities.DateUtils;
@@ -85,7 +114,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.OnNeverAskAgain;
@@ -103,13 +134,14 @@ public class AddEditPatientFragment extends ACBaseFragment<AddEditPatientContrac
     private DateTime bdt;
 
     private EditText edfname;
-    private EditText edmname;
+   // private EditText edmname;
+    private EditText edhclinic;
     private EditText edlname;
     private EditText eddob;
     private EditText edyr;
     private EditText edmonth;
     private EditText edaddr1;
-    private EditText edaddr2;
+    //private EditText edaddr2;
     private EditText edcity;
     private AutoCompleteTextView edstate;
     private AutoCompleteTextView edcountry;
@@ -147,9 +179,28 @@ public class AddEditPatientFragment extends ACBaseFragment<AddEditPatientContrac
         addSuggestionsToAutoCompleTextView();
         addListeners();
         fillFields(mPresenter.getPatientToUpdate());
+       updateGPSEditext();
         return root;
     }
+    private FusedLocationProviderClient mFusedLocationClient;
+ public void updateGPSEditext(){
+     mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this.getActivity());
+     mFusedLocationClient.getLastLocation()
+             .addOnSuccessListener(this.getActivity(), new OnSuccessListener<Location>() {
+                 @Override
+                 public void onSuccess(Location location) {
+                     // Got last known location. In some rare situations this can be null.
+                     Log.d("getGPSData.java", "hola 3");
 
+                     if (location != null) {
+                         // Logic to handle location object
+                         Log.d("getGPSData.java", "gps:"+location.getLatitude()+":"+location.getLongitude());
+                         edpostal.setText("lat:"+location.getLatitude()+":long:"+location.getLongitude());
+
+                     }
+                 }
+             });
+ }
     @Override
     public void finishPatientInfoActivity() {
         getActivity().finish();
@@ -217,9 +268,9 @@ public class AddEditPatientFragment extends ACBaseFragment<AddEditPatientContrac
         // Add address
         PersonAddress address = new PersonAddress();
         address.setAddress1(ViewUtils.getInput(edaddr1));
-        address.setAddress2(ViewUtils.getInput(edaddr2));
+       // address.setAddress2(ViewUtils.getInput(edaddr2));
         address.setCityVillage(ViewUtils.getInput(edcity));
-        address.setPostalCode(ViewUtils.getInput(edpostal));
+       address.setPostalCode(ViewUtils.getInput(edpostal));
         address.setCountry(ViewUtils.getInput(edcountry));
         address.setStateProvince(ViewUtils.getInput(edstate));
         address.setPreferred(true);
@@ -232,11 +283,16 @@ public class AddEditPatientFragment extends ACBaseFragment<AddEditPatientContrac
         PersonName name = new PersonName();
         name.setFamilyName(ViewUtils.getInput(edlname));
         name.setGivenName(ViewUtils.getInput(edfname));
-        name.setMiddleName(ViewUtils.getInput(edmname));
-
+       // name.setMiddleName(ViewUtils.getInput(edmname));
         List<PersonName> names = new ArrayList<>();
         names.add(name);
         person.setNames(names);
+
+        PersonAttribute personAttribute=new PersonAttribute();
+        personAttribute.setValue(edhclinic.getText().toString());
+        ArrayList<PersonAttribute> attributeArrayList=new ArrayList<PersonAttribute>();
+        attributeArrayList.add(personAttribute);
+        //person.setAttributes(attributeArrayList);
 
         // Add gender
         String[] genderChoices = {"M","F"};
@@ -263,7 +319,8 @@ public class AddEditPatientFragment extends ACBaseFragment<AddEditPatientContrac
             }
         }
         else {
-            birthdate = dateTimeFormatter.print(bdt);
+            DateTime aux=convertDataTime(bdt);
+            birthdate = dateTimeFormatter.print(aux);
         }
         person.setBirthdate(birthdate);
 
@@ -271,6 +328,18 @@ public class AddEditPatientFragment extends ACBaseFragment<AddEditPatientContrac
             person.setPhoto(patientPhoto);
 
         return person;
+    }
+
+    private DateTime convertDataTime(DateTime dt) {
+        Chronology chronoeth = EthiopicChronology.getInstanceUTC();
+        Chronology greg=GregorianChronology.getInstanceUTC();
+        LocalDate ldEth=new LocalDate(dt.year().get(),dt.monthOfYear().get(),dt.dayOfMonth().get(),chronoeth);
+        LocalDate ldGreg=new LocalDate(ldEth.toDateTimeAtStartOfDay(),greg);
+        //Log.d("convertDataTime.java", "greg"+ldGreg.toString());
+        //Log.d("convertDataTime.java", "eth"+ldEth.toString());
+        DateTime aux=ldGreg.toDateTimeAtStartOfDay();
+        //Log.d("convertDataTime.java", "dt"+aux);
+        return aux;
     }
 
     private Patient createPatient() {
@@ -333,13 +402,14 @@ public class AddEditPatientFragment extends ACBaseFragment<AddEditPatientContrac
     private void resolveViews(View v) {
         linearLayout = (LinearLayout)v.findViewById(R.id.addEditLinearLayout);
         edfname = (EditText) v.findViewById(R.id.firstname);
-        edmname = (EditText) v.findViewById(R.id.middlename);
+       // edmname = (EditText) v.findViewById(R.id.middlename);
+        edhclinic=(EditText)v.findViewById(R.id.numberHistory);
         edlname = (EditText) v.findViewById(R.id.surname);
         eddob = (EditText)v.findViewById(R.id.dob);
         edyr = (EditText)v.findViewById(R.id.estyr);
         edmonth = (EditText)v.findViewById(R.id.estmonth);
         edaddr1 = (EditText)v.findViewById(R.id.addr1);
-        edaddr2 = (EditText)v.findViewById(R.id.addr2);
+       // edaddr2 = (EditText)v.findViewById(R.id.addr2);
         edcity = (EditText)v.findViewById(R.id.city);
         edstate = (AutoCompleteTextView) v.findViewById(R.id.state);
         edcountry = (AutoCompleteTextView) v.findViewById(R.id.country);
@@ -375,7 +445,7 @@ public class AddEditPatientFragment extends ACBaseFragment<AddEditPatientContrac
 
             Person person = patient.getPerson();
             edfname.setText(person.getName().getGivenName());
-            edmname.setText(person.getName().getMiddleName());
+          //  edmname.setText(person.getName().getMiddleName());
             edlname.setText(person.getName().getFamilyName());
 
             patientName = person.getName().getNameString();
@@ -392,18 +462,19 @@ public class AddEditPatientFragment extends ACBaseFragment<AddEditPatientContrac
                 gen.check(R.id.female);
             }
 
-            edaddr1.setText(person.getAddress().getAddress1());
-            edaddr2.setText(person.getAddress().getAddress2());
-            edcity.setText(person.getAddress().getCityVillage());
-            edstate.setText(person.getAddress().getStateProvince());
+            edaddr1.setText(person.getAddress().getAddress1());//KEBELE
+          //  edaddr2.setText(person.getAddress().getAddress2());
+            edcity.setText(person.getAddress().getCityVillage()); // GODE
+            edstate.setText(person.getAddress().getStateProvince()); //WAREDA
             edcountry.setText(person.getAddress().getCountry());
-            edpostal.setText(person.getAddress().getPostalCode());
-
+           edpostal.setText(person.getAddress().getPostalCode());
             if (patient.getPerson().getPhoto() != null) {
                 patientPhoto = patient.getPerson().getPhoto();
                 resizedPatientPhoto = patient.getPerson().getResizedPhoto();
                 patientImageView.setImageBitmap(resizedPatientPhoto);
             }
+            if(person.getAttributes().size()>0)
+            edhclinic.setText((person.getAttributes().get(0).getValue()));
         }
     }
 
@@ -602,6 +673,8 @@ public class AddEditPatientFragment extends ACBaseFragment<AddEditPatientContrac
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d("getGPSData.java", "onActivityResult frag");
+
         if (requestCode == IMAGE_REQUEST){
             if (resultCode == Activity.RESULT_OK) {
                 patientPhoto = getResizedPortraitImage(output.getPath());

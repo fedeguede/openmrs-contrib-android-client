@@ -13,6 +13,7 @@ package org.openmrs.mobile.api;
 import android.app.IntentService;
 import android.content.Intent;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.activeandroid.query.Select;
 
@@ -118,6 +119,7 @@ public class EncounterService extends IntentService {
                         encountercreate.setSynced(true);
                         encountercreate.save();
                         new VisitApi().syncLastVitals(encountercreate.getPatient());
+                        Log.d("EncounterS.java", "syncEncounter Visits Data Signals");
                         if (callbackListener != null) {
                             callbackListener.onResponse();
                         }
@@ -160,6 +162,7 @@ public class EncounterService extends IntentService {
                     }
                     List<Encounter> encounterList=visit.getEncounters();
                     encounterList.add(encounter);
+                    Log.d("EncounterS.java", "visitSaveorUPdate1");
                     visitDAO.saveOrUpdate(visit, patientid)
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(id ->
@@ -188,6 +191,7 @@ public class EncounterService extends IntentService {
                                     syncEncounter(encountercreate);
 
                                 } else {
+                                    Log.d("EncounterS.java", "startNewVisitForEncounter");
                                     startNewVisitForEncounter(encountercreate);
                                 }
                             });

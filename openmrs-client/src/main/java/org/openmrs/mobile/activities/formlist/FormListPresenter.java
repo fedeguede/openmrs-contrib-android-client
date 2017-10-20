@@ -53,24 +53,32 @@ public class FormListPresenter extends BasePresenter implements FormListContract
         loadFormResourceList();
     }
 
+    private static String[] loadableEncountersList={EncounterType.NON_PHARMACOLOGICAL,EncounterType.PHARMACOLOGICAL,EncounterType.TEST_ADHERENCE,EncounterType.VITALS_PRES};
+    private boolean isLoadableFormResourceName(String resourceName){
+        for (int i=0;i<loadableEncountersList.length;i++)
+            if(resourceName.contentEquals(loadableEncountersList[i]))
+                return true;
+        return false;
+    }
     @Override
     public void loadFormResourceList() {
         formResourceList = new ArrayList<>();
         List<FormResource> allFormResourcesList = FormService.getFormResourceList();
         for (FormResource formResource : allFormResourcesList) {
-            List<FormResource> valueRef = formResource.getResourceList();
-            String valueRefString = null;
-
-            for (FormResource resource : valueRef) {
-                if (resource.getName().equals("json")) {
-                    valueRefString = resource.getValueReference();
+            if ( isLoadableFormResourceName(formResource.getName())) {
+                List<FormResource> valueRef = formResource.getResourceList();
+                String valueRefString = null;
+                for (FormResource resource : valueRef) {
+                    if (resource.getName().equals("json")) {
+                        valueRefString = resource.getValueReference();
+                    }
                 }
-            }
-            if (!StringUtils.isBlank(valueRefString)) {
-                formResourceList.add(formResource);
-            } else {
-                if (view.formCreate(formResource.getUuid(), formResource.getName().toLowerCase())) {
+                if (!StringUtils.isBlank(valueRefString)) {
                     formResourceList.add(formResource);
+                } else {
+                    if (view.formCreate(formResource.getUuid(), formResource.getName().toLowerCase())) {
+                        formResourceList.add(formResource);
+                    }
                 }
             }
 

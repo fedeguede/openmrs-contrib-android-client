@@ -39,12 +39,14 @@
     <string name="reg_firstname_hint">Given Name</string>
     <string name="reg_midname_hint">Middle Name</string>
     <string name="reg_surname_hint">Family Name</string>
+    <string name="reg_historyclinic_hint">Number Clinic history </string>
+
     <string name="reg_ques_name">What\'s the patient\'s name?</string>
     <string name="reg_ques_gender">What\'s the patient\'s gender?</string>
     <string name="reg_ques_dob">What\'s the patient\'s birth date?</string>
     <string name="label_or">Or</string>
     <string name="reg_ques_address">Address</string>
-    <string name="addr1_hint">Address</string>
+    <string name="addr1_hint">Kebele</string>
     <string name="addr2_hint">Address 2</string>
     <string name="atleastone">Fill at least one field</string>
     <string name="incorrect_country">Country name is incorrect</string>
@@ -180,9 +182,9 @@
     <string name="patient_contact_info_label">Contact Information</string>
     <string name="patient_information_label">Patient Information</string>
     <string name="patient_address_label">Address</string>
-    <string name="patient_city_label">City</string>
+    <string name="patient_city_label">Gode</string>
     <string name="patient_postal_label">Postal Code</string>
-    <string name="patient_state_label">State</string>
+    <string name="patient_state_label">Wareda</string>
     <string name="patient_country_label">Country</string>
     <string name="patient_photo_edit">Update photo</string>
 
