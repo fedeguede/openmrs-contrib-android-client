@@ -77,10 +77,10 @@ public class FormDisplayPageFragment extends ACBaseFragment<FormDisplayContract.
     BleWrapper mBleWrapper;
     private static final String TAG_CLASS="FDispPageFrag.java";
     private RangeEditText mEditTextSystolic;
-    private RangeEditText mEditTextDiastolic;
+    private RangeEditText mEditTextDiastolic,mEditTextPulseRate;
     private TextView mTxtView;
-    private ArrayList<Integer> mListSystolic,mListDiastolic;
-    int mDiastolic,mSystolic;
+    private ArrayList<Integer> mListSystolic,mListDiastolic,mListPulse;
+    int mDiastolic,mSystolic, mPulse;
 
     public static FormDisplayPageFragment newInstance() {
         return new FormDisplayPageFragment();
@@ -96,6 +96,7 @@ public class FormDisplayPageFragment extends ACBaseFragment<FormDisplayContract.
         mParent = (LinearLayout) root.findViewById(R.id.sectionContainer);
         mListDiastolic=new ArrayList<Integer>();
         mListSystolic=new ArrayList<Integer>();
+        mListPulse=new ArrayList<Integer>();
         return root;
     }
 
@@ -192,8 +193,11 @@ public class FormDisplayPageFragment extends ACBaseFragment<FormDisplayContract.
                 });
             if (question.getLabel().contentEquals("BP:Systolic:"))
                 mEditTextSystolic=ed;
-            if (question.getLabel().contentEquals("BP:Diastolic:")){
-                mEditTextDiastolic=ed;
+            if (question.getLabel().contentEquals("BP:Diastolic:")) {
+                mEditTextDiastolic = ed;
+           }
+            if (question.getLabel().contentEquals("Pulse(Rate/Min):")){
+                    mEditTextPulseRate=ed;
                 mTxtView=generateTextView("Number of measurements: 0");
                 sectionLinearLayout.addView(mTxtView, layoutParams);
 
@@ -335,28 +339,38 @@ public class FormDisplayPageFragment extends ACBaseFragment<FormDisplayContract.
                                     Log.d(TAG_CLASS,"uiNewValuePressForCharacteristic");
                                     mPDialog.dismiss();
                                     Log.d(TAG_CLASS,"ui systolic: "+systolic+" diastolic: "+diastolic);
-                                    mListSystolic.add(systolic);
-                                    mListDiastolic.add(diastolic);
-                                    mDiastolic=0;
-                                    mSystolic=0;
-                                    for(int i=0;i<mListDiastolic.size();i++){
-                                        mSystolic+=mListSystolic.get(i);
-                                        mDiastolic+=mListDiastolic.get(i);
-                                    }
-                                    mSystolic=mSystolic/mListSystolic.size();
-                                    mDiastolic=mDiastolic/mListDiastolic.size();
-                                    getActivity().runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Log.d(TAG_CLASS,"ui setEditText measure #: "+mListSystolic.size());
-                                            mTxtView.setText("Number of measurements: "+mListSystolic.size());
-                                            mEditTextSystolic.setText(String.valueOf(mSystolic));
-                                            mEditTextDiastolic.setText(String.valueOf(mDiastolic));
-                                            bluetoothButton.setEnabled(true);
+                                    if(mListSystolic.size()<3) {
+                                        mListSystolic.add(systolic);
+                                        mListDiastolic.add(diastolic);
+                                        mListPulse.add(hr);
+                                        mDiastolic = 0;
+                                        mSystolic = 0;
+                                        mPulse = 0;
+                                        for (int i = 0; i < mListDiastolic.size(); i++) {
+                                            mSystolic += mListSystolic.get(i);
+                                            mDiastolic += mListDiastolic.get(i);
+                                            mPulse += mListPulse.get(i);
                                         }
-                                    });
+                                        mSystolic = mSystolic / mListSystolic.size();
+                                        mDiastolic = mDiastolic / mListDiastolic.size();
+                                        mPulse = mPulse / mListPulse.size();
 
-
+                                        getActivity().runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                Log.d(TAG_CLASS,"ui setEditText measure #: "+mListSystolic.size());
+                                                mTxtView.setText("Number of measurements: "+mListSystolic.size());
+                                                mEditTextSystolic.setText(String.valueOf(mSystolic));
+                                                mEditTextDiastolic.setText(String.valueOf(mDiastolic));
+                                                if(mEditTextPulseRate!=null)
+                                                    mEditTextPulseRate.setText(String.valueOf(mPulse));
+                                                if(mListPulse.size()<3)
+                                                bluetoothButton.setEnabled(true);
+                                                else
+                                                    bluetoothButton.setEnabled(false);
+                                            }
+                                        });
+                                    }
                                 }
 
 
@@ -566,8 +580,8 @@ public class FormDisplayPageFragment extends ACBaseFragment<FormDisplayContract.
     public List<InputField> getInputFields() {
         for (InputField field : inputFields) {
             if (field.getConcept().equalsIgnoreCase(CONCEPT_BMI_UUID)) {
-                Double pes = inputFields.get(2).getValue();
-                Double altura = inputFields.get(3).getValue();
+                Double pes = inputFields.get(3).getValue();
+                Double altura = inputFields.get(4).getValue();
                 Double bmi = pes * 100 * 100 / (altura * altura);
                 Log.d("checkinputfieled.java", "check BMI:" + bmi.toString());
                 field.setValue(bmi);
@@ -659,8 +673,8 @@ public class FormDisplayPageFragment extends ACBaseFragment<FormDisplayContract.
         inputFields=getInputFields();
         for( InputField field:inputFields) {
             if (field.getConcept().equalsIgnoreCase(CONCEPT_BMI_UUID)) {
-                Double pes = inputFields.get(2).getValue();
-                Double altura = inputFields.get(3).getValue();
+                Double pes = inputFields.get(3).getValue();
+                Double altura = inputFields.get(4).getValue();
                 Double bmi = pes * 100 * 100 / (altura * altura);
                 TextView tv = (TextView) getActivity().findViewById(field.getId());
                 if (pes==-1.0F || altura==-1.0F)
