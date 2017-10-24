@@ -18,6 +18,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.activeandroid.query.Select;
 
@@ -89,6 +90,7 @@ public class PatientApi extends RetrofitApi{
         final SimpleDeferredObject<Patient> deferred = new SimpleDeferredObject<>();
 
         if (NetworkUtils.isOnline()) {
+            Log.d("PatientApi.java", "syncPatient");
             AndroidDeferredManager dm = new AndroidDeferredManager();
             dm.when(locationApi.getLocationUuid(), getIdGenPatientIdentifier(), getPatientIdentifierTypeUuid())
                     .done(new DoneCallback<MultipleResults>() {
@@ -101,7 +103,9 @@ public class PatientApi extends RetrofitApi{
                             identifier.setIdentifier((String) results.get(1).getResult());
                             identifier.setIdentifierType((IdentifierType) results.get(2).getResult());
                             identifiers.add(identifier);
-
+                            Log.d("PatientApi.java", "syncPatient location"+ ((Location) results.get(0).getResult()).getDisplay());
+                            Log.d("PatientApi.java", "syncPatient identifier"+results.get(1).getResult());
+                            Log.d("PatientApi.java", "syncPatient IdentifierType"+((IdentifierType) results.get(2).getResult()).getDisplay());
                             patient.setIdentifiers(identifiers);
                             patient.setUuid(null);
 
@@ -109,7 +113,11 @@ public class PatientApi extends RetrofitApi{
                             call.enqueue(new Callback<Patient>() {
                                 @Override
                                 public void onResponse(Call<Patient> call, Response<Patient> response) {
+                                    Log.d("PatientApi.java", "syncPatient patientCreate onResponse");
+
                                     if (response.isSuccessful()) {
+                                        Log.d("PatientApi.java", " patientCreate success");
+
                                         Patient newPatient = response.body();
 
                                         patient.setUuid(newPatient.getUuid());
@@ -128,6 +136,8 @@ public class PatientApi extends RetrofitApi{
                                         }
 
                                     } else {
+                                        Log.d("PatientApi.java", " syncpatiente onErrorResponse:"+response.message());
+
                                         ToastUtil.error("Patient[" + patient.getId() + "] cannot be synced due to server error"+ response.message());
                                         deferred.reject(new RuntimeException("Patient cannot be synced due to server error: " + response.errorBody().toString()));
                                         if (callbackListener != null) {
@@ -138,6 +148,8 @@ public class PatientApi extends RetrofitApi{
 
                                 @Override
                                 public void onFailure(Call<Patient> call, Throwable t) {
+                                    Log.d("PatientApi.java", " syncpatienteonFailure");
+
                                     ToastUtil.notify("Patient[" + patient.getId() + "] cannot be synced due to request error: " + t.toString());
                                     deferred.reject(t);
                                     if (callbackListener != null) {

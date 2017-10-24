@@ -14,6 +14,8 @@
 
 package org.openmrs.mobile.activities.patientdashboard.details;
 
+import android.util.Log;
+
 import org.openmrs.mobile.R;
 import org.openmrs.mobile.activities.patientdashboard.PatientDashboardContract;
 import org.openmrs.mobile.activities.patientdashboard.PatientDashboardMainPresenterImpl;
@@ -131,26 +133,32 @@ public class PatientDashboardDetailsPresenter extends PatientDashboardMainPresen
     * Download Patient
     */
     private void syncDetailsData() {
-        patientApi.downloadPatientByUuid(mPatient.getUuid(), new DownloadPatientCallbackListener() {
-            @Override
-            public void onPatientDownloaded(Patient patient) {
-                updatePatientData(patient);
-            }
+        if (mPatient.getUuid().equals(" ")){
+            Log.d("patientDashboard.java","empty uuid");
+            new PatientApi().syncPatient(mPatient);
+        }
+        else{
+            patientApi.downloadPatientByUuid(mPatient.getUuid(), new DownloadPatientCallbackListener() {
+                @Override
+                public void onPatientDownloaded(Patient patient) {
+                    updatePatientData(patient);
+                }
 
-            @Override
-            public void onPatientPhotoDownloaded(Patient patient) {
-                updatePatientData(patient);
-            }
+                @Override
+                public void onPatientPhotoDownloaded(Patient patient) {
+                    updatePatientData(patient);
+                }
 
-            @Override
-            public void onResponse() {
-                // This method is intentionally empty
-            }
-            @Override
-            public void onErrorResponse(String errorMessage) {
-                mPatientDetailsView.showToast(R.string.synchronize_patient_error, true);
-            }
-        });
+                @Override
+                public void onResponse() {
+                    // This method is intentionally empty
+                }
+                @Override
+                public void onErrorResponse(String errorMessage) {
+                    mPatientDetailsView.showToast(R.string.synchronize_patient_error, true);
+                }
+            });
+        }
     }
 
 }

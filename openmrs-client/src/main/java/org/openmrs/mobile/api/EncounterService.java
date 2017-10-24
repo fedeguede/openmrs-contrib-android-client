@@ -58,6 +58,7 @@ public class EncounterService extends IntentService {
                                 syncEncounter(encountercreate);
                             }
                         } else {
+                            Log.d("EncounterService.java", "addEncounter..startNewVisitForEncounter");
 
                             startNewVisitForEncounter(encountercreate);
                         }
@@ -73,31 +74,42 @@ public class EncounterService extends IntentService {
     }
 
         private void startNewVisitForEncounter(final Encountercreate encountercreate, @Nullable final DefaultResponseCallbackListener callbackListener) {
-        new VisitApi().startVisit(new PatientDAO().findPatientByUUID(encountercreate.getPatient()),
-                new StartVisitResponseListenerCallback() {
-                    @Override
-                    public void onStartVisitResponse(long id) {
-                        new VisitDAO().getVisitByID(id)
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(visit -> {
-                                    encountercreate.setVisit(visit.getUuid());
-                                    if (callbackListener != null) {
-                                        syncEncounter(encountercreate, callbackListener);
-                                    }
-                                    else {
-                                        syncEncounter(encountercreate);
-                                    }
-                                });
-                    }
-                    @Override
-                    public void onResponse() {
-                        // This method is intentionally empty
-                    }
-                    @Override
-                    public void onErrorResponse(String errorMessage) {
-                        ToastUtil.error(errorMessage);
-                    }
-                });
+            Log.d("EncounterS.java", "crea encounter sin visita");
+            if (callbackListener != null) {
+                syncEncounter(encountercreate, callbackListener);
+            }
+            else {
+                syncEncounter(encountercreate);
+            }
+//            new VisitApi().startVisit(new PatientDAO().findPatientByUUID(encountercreate.getPatient()),
+//                new StartVisitResponseListenerCallback() {
+//                    @Override
+//                    public void onStartVisitResponse(long id) {
+//                        Log.d("EncounterS.java", "startNewVisitForEncounter ok");
+//
+//                        new VisitDAO().getVisitByID(id)
+//                                .observeOn(AndroidSchedulers.mainThread())
+//                                .subscribe(visit -> {
+//                                    encountercreate.setVisit(visit.getUuid());
+//                                    if (callbackListener != null) {
+//                                        syncEncounter(encountercreate, callbackListener);
+//                                    }
+//                                    else {
+//                                        syncEncounter(encountercreate);
+//                                    }
+//                                });
+//                    }
+//                    @Override
+//                    public void onResponse() {
+//                        Log.d("EncounterS.java", "startNewVisitForEncounter onResponse");
+//                    }
+//                    @Override
+//                    public void onErrorResponse(String errorMessage) {
+//                        Log.d("EncounterS.java", "startNewVisitForEncounter onErrorResponse");
+//
+//                        ToastUtil.error(errorMessage);
+//                    }
+//                });
     }
 
     public void startNewVisitForEncounter(final Encountercreate encountercreate) {
@@ -107,6 +119,7 @@ public class EncounterService extends IntentService {
     public void syncEncounter(final Encountercreate encountercreate, @Nullable final DefaultResponseCallbackListener callbackListener) {
 
         if (NetworkUtils.isOnline()) {
+            Log.d("EncounterS.java", "syncEncounter 1");
 
             encountercreate.pullObslist();
             Call<Encounter> call = apiService.createEncounter(encountercreate);
@@ -114,8 +127,11 @@ public class EncounterService extends IntentService {
                 @Override
                 public void onResponse(Call<Encounter> call, Response<Encounter> response) {
                     if (response.isSuccessful()) {
+                        Log.d("EncounterS.java", "onResponse success");
+
                         Encounter encounter = response.body();
-                        linkvisit(encountercreate.getPatientId(),encountercreate.getFormname(), encounter, encountercreate);
+                        if (encounter.getVisit()!=null)
+                            linkvisit(encountercreate.getPatientId(),encountercreate.getFormname(), encounter, encountercreate);
                         encountercreate.setSynced(true);
                         encountercreate.save();
                         new VisitApi().syncLastVitals(encountercreate.getPatient());
@@ -124,7 +140,9 @@ public class EncounterService extends IntentService {
                             callbackListener.onResponse();
                         }
                     } else {
+                        Log.d("EncounterS.java", "onResponse error");
                         if (callbackListener != null) {
+
                             callbackListener.onErrorResponse(response.errorBody().toString());
                         }
                     }
@@ -191,7 +209,7 @@ public class EncounterService extends IntentService {
                                     syncEncounter(encountercreate);
 
                                 } else {
-                                    Log.d("EncounterS.java", "startNewVisitForEncounter");
+                                    Log.d("EncounterService.java", "onHandleVisit startNewVisitForEncounter");
                                     startNewVisitForEncounter(encountercreate);
                                 }
                             });

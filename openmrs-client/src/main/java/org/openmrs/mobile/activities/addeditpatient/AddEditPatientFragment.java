@@ -268,9 +268,9 @@ public class AddEditPatientFragment extends ACBaseFragment<AddEditPatientContrac
         // Add address
         PersonAddress address = new PersonAddress();
         address.setAddress1(ViewUtils.getInput(edaddr1));
-       // address.setAddress2(ViewUtils.getInput(edaddr2));
+        address.setAddress2(ViewUtils.getInput(edhclinic));
         address.setCityVillage(ViewUtils.getInput(edcity));
-       address.setPostalCode(ViewUtils.getInput(edpostal));
+        address.setPostalCode(ViewUtils.getInput(edpostal));
         address.setCountry(ViewUtils.getInput(edcountry));
         address.setStateProvince(ViewUtils.getInput(edstate));
         address.setPreferred(true);
@@ -463,6 +463,7 @@ public class AddEditPatientFragment extends ACBaseFragment<AddEditPatientContrac
             }
 
             edaddr1.setText(person.getAddress().getAddress1());//KEBELE
+            edhclinic.setText(person.getAddress().getAddress2());//MedicalRecord
           //  edaddr2.setText(person.getAddress().getAddress2());
             edcity.setText(person.getAddress().getCityVillage()); // GODE
             edstate.setText(person.getAddress().getStateProvince()); //WAREDA

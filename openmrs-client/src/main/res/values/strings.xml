@@ -39,7 +39,7 @@
     <string name="reg_firstname_hint">Given Name</string>
     <string name="reg_midname_hint">Middle Name</string>
     <string name="reg_surname_hint">Family Name</string>
-    <string name="reg_historyclinic_hint">Number Clinic history </string>
+    <string name="reg_historyclinic_hint">Medical Record Number </string>
 
     <string name="reg_ques_name">What\'s the patient\'s name?</string>
     <string name="reg_ques_gender">What\'s the patient\'s gender?</string>
