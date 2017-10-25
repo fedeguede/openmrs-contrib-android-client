@@ -98,7 +98,7 @@ public abstract class ApplicationConstants {
         //public static final String VITALS = "40fd285b-c6f8-4862-944f-5603645fc749";
 
         public static String[] ENCOUNTER_TYPES_DISPLAYS = {EncounterType.VITALS, EncounterType.ADMISSION,
-                EncounterType.DISCHARGE, EncounterType.VISIT_NOTE, EncounterType.VITALS_PRES, EncounterType.PHARMACOLOGICAL, EncounterType.NON_PHARMACOLOGICAL, EncounterType.TEST_ADHERENCE};
+                EncounterType.DISCHARGE, EncounterType.VISIT_NOTE, EncounterType.VITALS_PRES, EncounterType.PHARMACOLOGICAL, EncounterType.NON_PHARMACOLOGICAL, EncounterType.TEST_ADHERENCE,EncounterType.PERSONAL_DATA};
     }
 
 }

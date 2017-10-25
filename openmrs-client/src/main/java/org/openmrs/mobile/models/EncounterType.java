@@ -46,6 +46,7 @@ public class EncounterType extends Model implements Serializable {
     public static final String PHARMACOLOGICAL="Pharmacological";
     public static final String NON_PHARMACOLOGICAL="Non Pharmacological pres";
     public static final String TEST_ADHERENCE="Test Adherence";
+    public static final String PERSONAL_DATA="Personal data";
 
     public EncounterType() {}
 

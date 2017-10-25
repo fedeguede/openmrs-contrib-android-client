@@ -69,6 +69,8 @@ public class VisitExpandableListAdapter extends BaseExpandableListAdapter {
                 case EncounterType.PHARMACOLOGICAL:
                 case EncounterType.NON_PHARMACOLOGICAL:
                 case EncounterType.TEST_ADHERENCE:
+                case EncounterType.PERSONAL_DATA:
+
                     for (Observation obs : encounter.getObservations()) {
                         convertView = openMRSInflater.addKeyValueStringView(contentLayout, obs.getDisplay(), obs.getDisplayValue());
                     }
